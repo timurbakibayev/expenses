@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Личный кабинет</h1>
+<p>Добро пожаловать, {{ user.first_name }}!</p>
+<p>Ваш email: {{ user.email }}</p>
+<p><a href="/logout">Выйти</a></p>
+{% endblock %}

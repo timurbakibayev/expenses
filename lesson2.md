@@ -31,7 +31,7 @@
         </div>
         <div class="mb-3">
           <label for="password2" class="form-label">Confirm password</label>
-          <input type="password" class="form-control" id="password2" placeholder="confirm password">
+          <input name="password2" type="password" class="form-control" id="password2" placeholder="confirm password">
         </div>
         {% if message %}
         <div class="alert alert-danger" role="alert">
@@ -44,7 +44,8 @@
 
 **Создаем обработчик формы регистрации**
 
-Создаем обработчик формы регистрации, который будет проверять введенные данные и выводить сообщение об ошибке, если данные не прошли валидацию.
+Создаем обработчик формы регистрации, который будет проверять введенные данные 
+и выводить сообщение об ошибке, если данные не прошли валидацию.
 
 Создаём файл views_auth.py и добавляем в него обработчик формы регистрации.
 
@@ -68,7 +69,7 @@
                     user = User.objects.create_user(username=email, password=password)
                     user.first_name = username
                     user.save()
-                    user = authenticate(username=username, password=password)
+                    user = authenticate(username=email, password=password)
                     if user is not None:
                         login(request, user)
                         return HttpResponseRedirect("/")
@@ -114,11 +115,13 @@
 
 **Создаем обработчик формы авторизации**
 
-Создаем обработчик формы авторизации, который будет проверять введенные данные и выводить сообщение об ошибке, если данные не прошли валидацию.
+Создаем обработчик формы авторизации, который будет проверять введенные данные 
+и выводить сообщение об ошибке, если данные не прошли валидацию.
 
-Редактируем файл views_auth.py и добавляем в него обработчик формы авторизации.
+Редактируем файл views_auth.py и добавляем в него обработчик формы авторизации и выхода.
 
-    from django.contrib.auth import authenticate, login
+    from django.contrib.auth import authenticate, login, logout
+    from django.shortcuts import render, redirect
     
     def login_view(request):
         if request.method == 'POST':
@@ -134,12 +137,16 @@
         else:
             return render(request, 'login.html')
 
+    def logout_view(request):
+        logout(request)
+        return redirect("/")
+
 
 **Создаем страничку личного кабинета**
 
-Если пользователь не зарегистрирован, то показываем общую информацию о проекте. 
+Если пользователь не авторизован, то показываем общую информацию о проекте. 
 
-Для этого создаём простой index.html файл:
+Для этого редактируем index.html файл:
 
     {% extends 'base.html' %}
     {% block content %}
@@ -149,7 +156,18 @@
     <p>Чтобы авторизоваться, нажмите <a href="/login">сюда</a></p>
     {% endblock %}
 
-Если пользователь зарегистрирован, то показываем информацию о нём.
+Если пользователь авторизован, то показываем информацию 
+о нём (redirect на страницу личного кабинета).
+
+Для этого редактируем функцию index в файле views.py:
+
+    from django.shortcuts import render, redirect
+    
+    def index(request):
+        if request.user.is_authenticated:
+            return redirect('/account')
+        else:
+            return render(request, 'index.html')
 
 Создаём файл account.html и добавляем в него информацию о пользователе.
 
@@ -158,6 +176,46 @@
     <h1>Личный кабинет</h1>
     <p>Добро пожаловать, {{ user.first_name }}!</p>
     <p>Ваш email: {{ user.email }}</p>
+    <p><a href="/logout">Выйти</a></p>
     {% endblock %}
 
+Добавляем функцию account в файле views.py:
 
+    from django.shortcuts import render
+    
+    def account(request):
+        user = request.user
+        return render(request, 'account.html', {'user': user})
+
+**Изменяем urls.py**
+
+Изменяем urls.py, чтобы при переходе на главную страницу сайта, 
+если пользователь не зарегистрирован, то показывалась общая информация о проекте, 
+а если пользователь зарегистрирован, то показывалась информация о нём.
+
+    from app import views_auth
+    
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('', views.index, name='index'),
+        path('register/', views_auth.registration, name='register'),
+        path('login/', views_auth.login_view, name='login'),
+        path('logout/', views_auth.logout_view, name='logout'),
+        path('account/', views.account, name='account'),
+    ]
+
+
+**Миграция данных**
+
+Чтобы проект нормально работал, нам уже нужна база данных с таблицами пользователя. 
+Так как эта таблица стандартная в Django, всё, что нам необходимо сделать, это
+
+    python manage.py migrate
+
+Можно запускать проект, проверьте, что работают:
+
+- Регистрация
+- Выход
+- Авторизация
+- Обработчик ошибок при неправильной регистрации и авторизации
+- Личный кабинет

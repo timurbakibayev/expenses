@@ -5,7 +5,7 @@
 
 Для этого создаем виртуальное окружение venv, устанавливаем django и выполняем команду
 
-    django-admin startproject expenses
+    django-admin startproject expenses .
 
 **Создаем приложение app**
 
@@ -30,28 +30,27 @@
 
     'django.contrib.staticfiles',
 
+В файле settings.py в разделе STATIC_URL добавляем
+
+    STATIC_URL = 'static/'
+    STATIC_ROOT = BASE_DIR / 'static'
+
 В файле urls.py добавляем
 
-    from django.contrib import staticfiles
-    urlpatterns += staticfiles.urlpatterns()
+    from django.conf.urls.static import static
+    from expenses import settings
+    urlpatterns += += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-В папке проекта создаем папку static и в ней папку css, js, img
-
-В папке проекта создаем папку templates и в ней папку app
-
-В папке проекта создаем файл .gitignore и добавляем в него
-
-    *.pyc
-    __pycache__
-    .DS_Store
-    .env
-    .idea
-    db.sqlite3
-    static
+В папке приложения app создаем папку app/static.
+Скачиваем bootstrap из getbootstrap.com -> docs -> downloads и копируем в папку app/static папки css и js.
 
 **Создаем базовый html файл, в котором будут все метаданные и bootstrap**
 
-В папке templates создаем файл base.html и добавляем в него
+В файле settings.py в разделе TEMPLATES добавляем 'templates' в DIRS
+
+    'DIRS': ['templates'],
+
+В папке app создаем папку templates, внутри неё создаем файл base.html и добавляем в него
 
     <!DOCTYPE html>
     <html lang="en">
@@ -71,9 +70,53 @@
 
 **Создаем страничку приветствия**
 
-В папке templates/app создаем файл index.html и добавляем в него
+В папке app/templates создаем файл index.html и добавляем в него
 
     {% extends 'base.html' %}
     {% block content %}
         <h1>Expenses</h1>
     {% endblock %}
+
+В файле app/views.py добавляем
+    
+    from django.shortcuts import render
+    from django.http import HttpRequest, HttpResponse
+    
+    
+    def index(request: HttpRequest) -> HttpResponse:
+        return render(request, 'index.html')
+
+В файле app/urls.py добавляем
+
+    from app import views
+    ...    
+    urlpatterns = [
+        ...
+        path('', views.index, name="index"),
+        ...
+    ]
+
+**Итоговая структура дерева папок**
+
+    expenses
+    ├── app
+    │   ├── migrations
+    │   ├── static
+    │   │   ├── css
+    │   │   └── js
+    │   ├── templates
+    │   │   ├── base.html
+    │   │   └── index.html
+    │   ├── __init__.py
+    │   ├── admin.py
+    │   ├── apps.py
+    │   ├── models.py
+    │   ├── tests.py
+    │   └── views.py
+    ├── expenses
+    │   ├── __init__.py
+    │   ├── asgi.py
+    │   ├── settings.py
+    │   ├── urls.py
+    │   └── wsgi.py
+    └── manage.py
