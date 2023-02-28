@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 
+from app.models import Transaction
+
 
 def index(request):
     if request.user.is_authenticated:
@@ -12,4 +14,7 @@ def account(request):
     user = request.user
     if not user.is_authenticated:
         return redirect("/")
-    return render(request, 'account.html', {'user': user})
+
+    transactions = Transaction.objects.filter(user=user)
+
+    return render(request, 'account.html', {'user': user, "transactions": transactions})
