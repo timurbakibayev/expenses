@@ -26,7 +26,7 @@
     </form>
     {% endblock %}
 
-Создаём обработчик формы create.html в файле views.py:
+**Создаём обработчик формы create.html в файле views.py:**
 
     def create_view(request):
         user = request.user
