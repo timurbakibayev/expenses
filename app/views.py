@@ -40,4 +40,4 @@ def create_view(request):
             )
         return redirect("/")
 
-    return render(request, "create.html")
+    raise NotImplementedError
