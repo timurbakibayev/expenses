@@ -12,6 +12,7 @@
             <th>id</th>
             <th>Описание</th>
             <th>Сумма</th>
+            <th>Операции</th>
         </tr>
     </thead>
     <tbody>
@@ -22,6 +23,7 @@
             <td style="color: {% if transaction.amount < 0 %}red{% else %}darkgreen{% endif %}">
                 {{ transaction.amount }} KZT
             </td>
+            <td><a class="btn btn-sm btn-danger" href="/delete/{{ transaction.id }}">delete</a></td>
         </tr>
     {% endfor %}
     </tbody>

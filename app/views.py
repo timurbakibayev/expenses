@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-
 from app.models import Transaction
+from django.http import HttpRequest, HttpResponse
 
 
 def index(request):
@@ -18,6 +18,11 @@ def account(request):
     transactions = Transaction.objects.filter(user=user)
 
     return render(request, 'account.html', {'user': user, "transactions": transactions})
+
+
+def delete_view(request: HttpRequest, transaction_id: int) -> HttpResponse:
+    Transaction.objects.filter(id=transaction_id).filter(user=request.user).delete()
+    return redirect("/")
 
 
 def create_view(request):
