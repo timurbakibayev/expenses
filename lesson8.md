@@ -122,11 +122,11 @@
 
 Здесь необходимо обратить внимание на эту строку:
 
-    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal_edit_{{ transaction.id }}">ред</button>
+    <button type="button" ... data-bs-target="#modal_edit_{{ transaction.id }}">ред</button>
 
 В ней мы используем такой же идентификатор, как и в edit.html (самая первая строка):
 
-    data-bs-target="#modal_edit_{{ transaction.id }}"
+    <div class="modal fade" id="modal_edit_{{ transaction.id }}" tabindex="-1" ...
 
 Это для того, чтобы для каждой транзакции вызывалось своё модальное окно.
 
