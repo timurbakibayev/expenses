@@ -13,6 +13,7 @@ urlpatterns = [
     path('account/', views.account, name='account'),
     path('create/', views.create_view, name='create'),
     path('delete/<int:transaction_id>', views.delete_view, name='delete'),
+    path('edit/<int:transaction_id>', views.edit_view, name='edit'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

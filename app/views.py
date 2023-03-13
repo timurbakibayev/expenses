@@ -20,6 +20,21 @@ def account(request):
     return render(request, 'account.html', {'user': user, "transactions": transactions})
 
 
+def edit_view(request: HttpRequest, transaction_id: int) -> HttpResponse:
+    transaction = Transaction.objects.filter(id=transaction_id).filter(user=request.user).first()
+
+    if request.method == "POST":
+        transaction.description = request.POST.get("description", "")
+        if request.POST.get("type", "") == "expense":
+            transaction.amount = -abs(int(request.POST.get("amount", 0)))
+        if request.POST.get("type", "") == "income":
+            transaction.amount = abs(int(request.POST.get("amount", 0)))
+        transaction.save()
+        return redirect("/")
+
+    raise NotImplementedError
+
+
 def delete_view(request: HttpRequest, transaction_id: int) -> HttpResponse:
     Transaction.objects.filter(id=transaction_id).filter(user=request.user).delete()
     return redirect("/")

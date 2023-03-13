@@ -23,7 +23,10 @@
             <td style="color: {% if transaction.amount < 0 %}red{% else %}darkgreen{% endif %}">
                 {{ transaction.amount }} KZT
             </td>
-            <td><button class="btn btn-sm btn-danger" onclick="delete_transaction({{ transaction.id }})">delete</button></td>
+            <td>
+                <button class="btn btn-sm btn-danger" onclick="delete_transaction({{ transaction.id }})">удалить</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal_edit_{{ transaction.id }}">ред</button>
+            </td>
         </tr>
     {% endfor %}
     </tbody>
@@ -44,5 +47,9 @@
     </script>
 
 {% include "create.html" %}
+
+{% for transaction in transactions %}
+    {% include "edit.html" %}
+{% endfor %}
 
 {% endblock %}
